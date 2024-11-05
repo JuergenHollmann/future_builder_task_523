@@ -49,19 +49,21 @@ class _MainScreenState extends State<MainScreen> {
     }
   }
 
-  //String get zip => "";
+  Future<String>? zipCode;
 
   @override
   void initState() {
     super.initState();
+    inputZipCode = TextEditingController();
+  }
 
-    // Future<String> getCityFromZip; //(String zip);
-    // Future<String> getCityFromZip(zipCode);
-    getCityFromZip;
-    // String zipCode = "11111";
-    /*--------------------------------- Controller ---*/
-    // final TextEditingController inputZipCode = TextEditingController();
-    // String inputZipCode = "";
+  /*--------------------------------- Controller ---*/
+  late final TextEditingController inputZipCode;
+
+  @override
+  void dispose() {
+    inputZipCode.dispose();
+    super.dispose();
   }
 
   @override
@@ -73,108 +75,73 @@ class _MainScreenState extends State<MainScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              /*--------------------------------- FutureBuilder ---*/
-              FutureBuilder(
-                // future: getCityFromZip, // funzt nicht
-                // future: getCityFromZip(zip), // funzt nicht
-                // future: getCityFromZip("11111"), // funzt nicht
-                future: getCityFromZip(), // Berlin
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    // completed (with data)
-                    log("ConnectionState.hasData");
-                    return Text(snapshot.data!);
-                    //return Text(snapshot.data.toString());
-                  } else if (snapshot.hasError) {
-                    // completed (with error)
-                    log("ConnectionState.hasError");
-                    return Text('Fehler: ${snapshot.error}');
-                  } else if (snapshot.connectionState ==
-                      ConnectionState.waiting) {
-                    // uncompleted
-                    log("ConnectionState.waiting");
-                    return const CircularProgressIndicator();
-                  } else if (snapshot.connectionState == ConnectionState.done) {
-                    log("ConnectionState.done");
-                    //return Text(snapshot.data!);
-                  }
-                  log("Unbekannter Fehler");
-                  return const Text('Unbekannter Fehler');
-                },
-              ),
+              // /*--------------------------------- FutureBuilder ---*/
+              // das funktioniert auch:
+              // FutureBuilder(
+              //   future: zipCode,
+              //   builder: (context, snapshot) {
+              //     if (snapshot.hasData) {
+              //       // completed (with data)
+              //       log("ConnectionState.hasData");
+              //       //return Text(snapshot.data!);
+              //       return Text(snapshot.data.toString());
+              //     } else if (snapshot.hasError) {
+              //       // completed (with error)
+              //       log("ConnectionState.hasError");
+              //       return Text('Fehler: ${snapshot.error}');
+              //     } else if (snapshot.connectionState != ConnectionState.none &&
+              //         !snapshot.hasData) {
+              //       // uncompleted
+              //       log("ConnectionState.waiting");
+              //       return const CircularProgressIndicator();
+              //     }
+              //     log("Container");
+              //     return Container();
+              //   },
+              // ),
 
               /*--------------------------------- TextField ---*/
-              const TextField(
-                //controller: inputZipCode,
-                decoration: InputDecoration(
+              TextField(
+                controller: inputZipCode,
+                decoration: const InputDecoration(
                     border: OutlineInputBorder(), labelText: "Postleitzahl"),
               ),
               const SizedBox(height: 32),
 
-              // /*--------------------------------- FutureBuilder ---*/
-              // FutureBuilder<String>(
-              //   // future: getCityFromZip, // funzt nicht
-              //   // future: getCityFromZip(zip), // funzt nicht
-              //   future: getCityFromZip(""), // funzt nicht
-              //   builder: (context, snapshot) {
-              //     if (snapshot.connectionState == ConnectionState.waiting) {
-              //       // uncompleted
-              //       return const CircularProgressIndicator();
-              //     } else if (snapshot.connectionState == ConnectionState.done) {
-              //       if (snapshot.hasData) {
-              //         // completed (with data)
-              //         return Text(snapshot.data!);
-              //         //return Text(snapshot.data.toString());
-              //       } else if (snapshot.hasError) {
-              //         // completed (with error)
-              //         return Text('Fehler: ${snapshot.error}');
-              //       }
-              //     }
-              //     return const Text('Unbekannter Fehler');
-              //   },
-              // ),
+              /*--------------------------------- FutureBuilder ---*/
+              FutureBuilder<String>(
+                future: zipCode,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    // uncompleted
+                    return const CircularProgressIndicator();
+                  } else if (snapshot.connectionState == ConnectionState.done) {
+                    if (snapshot.hasData) {
+                      // completed (with data)
+                      return Text(snapshot.data!);
+                      //return Text(snapshot.data.toString()); // das funktioniert auch
+                    } else if (snapshot.hasError) {
+                      // completed (with error)
+                      return Text('Fehler: ${snapshot.error}');
+                    }
+                  }
+                  return const Text('Unbekannter Fehler');
+                },
+              ),
 
               /*--------------------------------- OutlinedButton ---*/
               OutlinedButton(
                 onPressed: () {
-                  // todo: implementiere Suche
                   setState(() {
-                    getCityFromZip;
-
-                    // log("OutlinedButton SUCHE geklickt");
-                    // getCityFromZip;
+                    zipCode = getCityFromZip(inputZipCode.text);
+                    log("OutlinedButton SUCHE geklickt");
                   });
-                  log("OutlinedButton SUCHE geklickt");
-                  //getCityFromZip;
                 },
                 child: const Text("Suche die Stadt nach Eingabe der PLZ"),
               ),
-              //--------------------------------- Text ---*/
+
+              /*--------------------------------- Text ---*/
               const SizedBox(height: 32),
-
-              // /*--------------------------------- FutureBuilder ---*/
-              // FutureBuilder(
-              //   // future: getCityFromZip, // funzt nicht
-              //   // future: getCityFromZip(zip), // funzt nicht
-              //   future: getCityFromZip(), // funzt nicht
-              //   builder: (context, snapshot) {
-              //     if (snapshot.connectionState == ConnectionState.waiting) {
-              //       // uncompleted
-              //       return const CircularProgressIndicator();
-              //     } else if (snapshot.connectionState == ConnectionState.done) {
-              //       if (snapshot.hasData) {
-              //         // completed (with data)
-              //         return Text(snapshot.data!);
-              //         //return Text(snapshot.data.toString());
-              //       } else if (snapshot.hasError) {
-              //         // completed (with error)
-              //         return Text('Fehler: ${snapshot.error}');
-              //       }
-              //     }
-              //     return const Text('Unbekannter Fehler');
-              //   },
-              // ),
-
               Text("Ergebnis: Noch keine PLZ gesucht",
                   style: Theme.of(context).textTheme.labelLarge),
             ],
@@ -182,11 +149,5 @@ class _MainScreenState extends State<MainScreen> {
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    // todo: dispose controllers // contoller entsorgen
-    super.dispose();
   }
 }
